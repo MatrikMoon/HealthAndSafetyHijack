@@ -1,5 +1,7 @@
-﻿using IllusionPlugin;
+﻿using CustomUI.Settings;
+using IllusionPlugin;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -23,12 +25,13 @@ namespace HealthAndSafetyHijack
 
         public void OnApplicationStart()
         {
+            Config.LoadConfig();
             SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
         }
 
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
         {
-            if (arg1.name == "HealthWarning")
+            if (arg1.name == "HealthWarning" && Config.ShowDisclaimer)
             {
                 SharedCoroutineStarter.instance.StartCoroutine(HijackHealthAndSafety());
             }
@@ -63,7 +66,11 @@ namespace HealthAndSafetyHijack
             yield return new WaitUntil(() => eulaViewController.isInViewControllerHierarchy);
 
             var textPageScrollView = eulaViewController.GetField<TextPageScrollView>("_textPageScrollView");
-            textPageScrollView.SetText("Don't be dumb, yo.");
+            textPageScrollView.SetText("By using mods, you understand that:\n\n" +
+                "1. You may experience problems that don't exist in the vanilla game. 99.9% of bugs and crashes are due to mods\n\n" +
+                "2. Mods are subject to being broken by updates and that's normal. Be patient and respectful when this happens, as modders are volunteers with real lives\n\n" +
+                "3. Beat Games aren't purposefully trying to break mods. This is an Early Access game and updates can happen at any time\n\n" +
+                "4. Modders and devs are two separate groups; do not attack the devs for issues related to mods");
         }
 
         public void HandleEulaViewControllerdidFinish(bool agreed)
